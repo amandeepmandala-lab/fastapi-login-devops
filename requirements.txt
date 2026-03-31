@@ -1,6 +1,8 @@
-fastapi
-uvicorn
-sqlalchemy
+fastapi==0.95.2
+uvicorn==0.22.0
+sqlalchemy==2.0.48
 passlib[bcrypt]
-jinja2
+bcrypt==3.2.2
+jinja2==3.0.3
 python-multipart
+psycopg2-binary

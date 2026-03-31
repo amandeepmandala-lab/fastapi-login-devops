@@ -1,22 +1,23 @@
 from fastapi import FastAPI, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
-from database import SessionLocal, engine, Base
-import models
-from auth import hash_password, verify_password
 from fastapi.templating import Jinja2Templates
 import os
 
-# Create DB tables
+from database import SessionLocal, engine, Base
+import models
+from auth import hash_password, verify_password
+
+# Create tables (after DB is ready)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# ✅ FIXED TEMPLATE PATH + VARIABLE NAME
+# ✅ IMPORTANT: use correct variable name
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-template_engine = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
+templates = Jinja2Templates(directory="templates")
 
-# DB Dependency
+# ---------------- DB Dependency ---------------- #
 def get_db():
     db = SessionLocal()
     try:
@@ -24,16 +25,15 @@ def get_db():
     finally:
         db.close()
 
-# Home redirect
+# ---------------- HOME ---------------- #
 @app.get("/")
 def home():
     return RedirectResponse("/login")
 
 # ---------------- SIGNUP ---------------- #
-
 @app.get("/signup", response_class=HTMLResponse)
 def signup_page(request: Request):
-    return template_engine.TemplateResponse("signup.html", {"request": request})
+    return templates.TemplateResponse("signup.html", {"request": request})
 
 @app.post("/signup")
 def signup(
@@ -57,10 +57,9 @@ def signup(
     return RedirectResponse("/login", status_code=303)
 
 # ---------------- LOGIN ---------------- #
-
 @app.get("/login", response_class=HTMLResponse)
 def login_page(request: Request):
-    return template_engine.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse("login.html", {"request": request})
 
 @app.post("/login")
 def login(
